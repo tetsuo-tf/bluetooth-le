@@ -63,13 +63,6 @@
   "peerDependencies": {
     "@capacitor/core": "^5.0.0"
   },
-  "files": [
-    "android/src/main/",
-    "android/build.gradle",
-    "dist/",
-    "ios/Plugin/",
-    "CapacitorCommunityBluetoothLe.podspec"
-  ],
   "keywords": [
     "capacitor",
     "plugin",
