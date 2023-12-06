@@ -143,7 +143,8 @@ public class BluetoothLe: CAPPlugin {
         let name = call.getString("name")
         let namePrefix = call.getString("namePrefix")
         let allowDuplicates = call.getBool("allowDuplicates", false)
-
+        let notificationNameFilters = call.getArray("notificationNameFilters", String.self) ?? []
+        
         deviceManager.startScanning(
             serviceUUIDs,
             name,
@@ -159,7 +160,14 @@ public class BluetoothLe: CAPPlugin {
             }, {(device, advertisementData, rssi) -> Void in
                 self.deviceMap[device.getId()] = device
                 let data = self.getScanResult(device, advertisementData, rssi)
-                self.notifyListeners("onScanResult", data: data)
+                if (notificationNameFilters.isEmpty) {
+                    self.notifyListeners("onScanResult", data: data)
+                } else {
+                    guard let localName = data["localName"] as? String else { return }
+                    if (notificationNameFilters.contains(localName)) {
+                        self.notifyListeners("onScanResult", data: data)
+                    }
+                }
             }
         )
     }

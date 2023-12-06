@@ -352,6 +352,7 @@ class BluetoothLe : Plugin() {
         val scanSettings = getScanSettings(call) ?: return
         val namePrefix = call.getString("namePrefix", "") as String
         val allowDuplicates = call.getBoolean("allowDuplicates", false) as Boolean
+        val notificationNameFilters = (call.getArray("notificationNameFilters", JSArray()) as JSArray).toList<String>()
 
         try {
             deviceScanner?.stopScanning()
@@ -383,6 +384,12 @@ class BluetoothLe : Plugin() {
             },
             { result ->
                 run {
+                    if (notificationNameFilters.isNotEmpty()) {
+                        if (!notificationNameFilters.contains(result.device.name)) {
+                            return@run
+                        }
+                    }
+
                     val scanResult = getScanResult(result)
                     try {
                         notifyListeners("onScanResult", scanResult)
